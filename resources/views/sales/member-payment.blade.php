@@ -61,30 +61,29 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-medium mb-1">Available Points</label>
-                    <input type="text" class="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" 
+                    <label class="block text-gray-700 text-sm font-medium mb-1">Points</label>
+                    <input type="text" name="available_point" id="availablePoint"
+                        class="w-full p-2 border border-gray-300 rounded-lg bg-gray-100"
                         value="{{ $sale->member->point }}" readonly>
                 </div>
-
-                @if(!$is_first_purchase && $sale->member->point > 0)
-                <div class="mb-4">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="use_points" id="usePoints" class="mr-2" value="1">
-                        <label for="usePoints" class="text-sm">Use Points (1 Point = Rp 100)</label>
+                
+                @if($sale->member->point > 0)
+                    <div class="mb-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="use_points" id="usePoints" class="mr-2" value="1" 
+                            @if($is_first_purchase) disabled @endif>
+                            <label for="usePoints" class="text-sm">Use Points</label>
+                        </div>
                     </div>
-                    
-                    <div id="pointsField" class="mt-2 hidden">
-                        <label class="block text-gray-700 text-sm font-medium mb-1">Points Amount</label>
-                        <input type="number" name="point_used" id="pointUsed" 
-                            class="w-full p-2 border border-gray-300 rounded-lg"
-                            min="0" max="{{ $sale->member->point }}" value="0">
-                    </div>
-                </div>
-                @elseif($is_first_purchase)
-                <div class="text-yellow-600 text-sm mb-4">
-                    Points cannot be used on the first purchase.
-                </div>
                 @endif
+
+                @if($is_first_purchase)
+                    <div class="text-red-600 text-sm mb-4">
+                        Points cannot be used on the first purchase!
+                    </div>
+                @endif
+
+                
 
                 <div class="text-right">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">

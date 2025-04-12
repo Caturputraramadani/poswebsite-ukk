@@ -16,62 +16,48 @@
                 </a>
             </div>
 
-            <div class="relative overflow-x-auto">
-                <table class="text-left w-full whitespace-nowrap text-sm text-gray-500">
-                    <thead>
-                        <tr class="text-sm">
-                            <th class="p-4 font-semibold">#</th>
-                            <th class="p-4 font-semibold">EMAIL</th>
-                            <th class="p-4 font-semibold">NAMA</th>
-                            <th class="p-4 font-semibold">ROLE</th>
-                            <th class="p-4 font-semibold">ACTION</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($users as $user)
-                            <tr>
-                                <td class="p-4">
-                                    <h3 class="font-medium">{{ $loop->iteration }}</h3>
-                                </td>
-                                <td class="p-4">
-                                    <h3 class="font-medium">{{ $user->email }}</h3>
-                                </td>
-                                <td class="p-4">
-                                    <h3 class="font-medium">{{ $user->name }}</h3>
-                                </td>
-                                <td class="p-4">
-                                    <h3 class="font-medium text-teal-500  capitalize">{{ $user->role }}</h3>
-                                </td>
-                                <td class="p-4">
-                                    <div
-                                        class="hs-dropdown relative inline-flex [--placement:bottom-right] sm:[--trigger:hover]">
-                                        <a class="relative hs-dropdown-toggle cursor-pointer align-middle rounded-full">
-                                            <i class="ti ti-dots-vertical text-2xl text-gray-400"></i>
-                                        </a>
-                                        <div
-                                            class="card hs-dropdown-menu transition-[opacity,margin] rounded-md duration hs-dropdown-open:opacity-100 opacity-0 mt-2 min-w-max w-[150px] hidden z-[12]">
-                                            <div class="card-body p-0 py-2">
-                                                <a href="javascript:void(0)"
-                                                    onclick="openUserModal({{ json_encode($user) }})"
-                                                    class="flex gap-2 items-center font-medium px-4 py-2.5 hover:bg-gray-200 text-gray-400">
-                                                    <p class="text-sm">Edit</p>
-                                                </a>
-                                                <a href="javascript:void(0)" onclick="deleteUser('{{ $user->id }}')"
-                                                    class="flex gap-2 items-center font-medium px-4 py-2.5 hover:bg-gray-200 text-gray-400">
-                                                    <p class="text-sm">Delete</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="p-4 text-center text-gray-500">User not found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+             <!-- Tambahkan Search dan Pagination Controls -->
+             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search..." 
+                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <div class="absolute left-3 top-2.5">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center text-sm gap-2">
+                    <span class="text-gray-600">Show:</span>
+                    <div class="relative">
+                        <select id="perPage" 
+                            class="appearance-none border border-gray-300 rounded-md px-3 pr-8 py-1.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <span class="text-gray-600">entries</span>
+                </div>
+            </div>
+
+
+
+            <!-- Container untuk tabel dan pagination -->
+            <div class="relative overflow-x-auto" id="userTableContainer">
+                @include('users.partials.table', ['users' => $users])
+            </div>
+
+            <div class="mt-4" id="paginationLinks">
+                @if(isset($users))
+                    @include('users.partials.pagination', [
+                        'paginator' => $users,
+                        'entries_info' => "Showing {$users->firstItem()} to {$users->lastItem()} of {$users->total()} entries"
+                    ])
+                @endif
             </div>
         </div>
     </div>

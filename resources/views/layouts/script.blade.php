@@ -400,32 +400,23 @@
 
 {{-- Script Member Payment --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const usePoints = document.getElementById('usePoints');
-        const paymentForm = document.getElementById('paymentForm');
+    document.addEventListener('DOMContentLoaded', function () {
+    const checkbox = document.getElementById('usePoints');
+    const input = document.getElementById('availablePoint');
 
-        if (usePoints) {
-            usePoints.addEventListener('change', function() {
-                const pointsField = document.getElementById('pointsField');
-                if (pointsField) {
-                    pointsField.classList.toggle('hidden', !this.checked);
-                }
-            });
-
-            paymentForm.addEventListener('submit', function(e) {
-                if (usePoints.checked) {
-                    const pointUsed = document.getElementById('pointUsed');
-                    if (pointUsed && pointUsed.value <= 0) {
-                        e.preventDefault();
-                        alert('Masukkan jumlah poin yang akan digunakan');
-                        return false;
-                    }
-                }
-                return true;
-            });
-        }
+    if (checkbox && input) {
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) {
+                input.classList.add('text-green-600', 'font-semibold');
+            } else {
+                input.classList.remove('text-green-600', 'font-semibold');
+            }
+        });
+    }
     });
+
 </script>
+
 
 {{-- Script Modal Sales --}}
 <script>
@@ -499,15 +490,6 @@
     });
 </script>
 
-{{-- Script Paginate Sales index --}}
-<script>
-    function changePerPage(select) {
-        const perPage = select.value;
-        const url = new URL(window.location.href);
-        url.searchParams.set('per_page', perPage);
-        window.location.href = url.toString();
-    }
-</script>
 
 {{-- Script Sales Chart --}}
 <script>
@@ -749,6 +731,15 @@
     });
 </script>
 
+{{-- Script Paginate Sales index --}}
+<script>
+    function changePerPage(select) {
+        const perPage = select.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('per_page', perPage);
+        window.location.href = url.toString();
+    }
+</script>
 
 {{-- Script Search Paginate Sales --}}
 <script>
@@ -846,3 +837,100 @@
     }
 </script>
 
+{{-- Script Search Paginate Product --}}
+<script>
+    $(document).ready(function() {
+    // Search on keyup with delay
+    let searchTimer;
+    $('#searchInput').on('keyup', function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() {
+            loadProductsData();
+        }, 500);
+    });
+
+    // Change per page
+    $('#perPage').on('change', function() {
+        loadProductsData();
+    });
+
+    // Handle pagination clicks
+    $(document).on('click', '.pagination-link', function(e) {
+        e.preventDefault();
+        const page = $(this).data('page');
+        loadProductsData(page);
+    });
+    });
+
+    function loadProductsData(page = 1) {
+        const search = $('#searchInput').val();
+        const perPage = $('#perPage').val();
+
+        $.ajax({
+            url: '{{ route("products.index") }}',
+            type: 'GET',
+            data: {
+                search: search,
+                per_page: perPage,
+                page: page,
+                ajax: true
+            },
+            success: function(response) {
+                $('#productTableContainer').html(response.html);
+                $('#paginationLinks').html(response.pagination);
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+</script>
+
+{{-- Script Search Paginate User --}}
+<script>
+    $(document).ready(function() {
+    // Search on keyup with delay
+    let searchTimer;
+    $('#searchInput').on('keyup', function() {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() {
+            loadUsersData();
+        }, 500);
+    });
+
+    // Change per page
+    $('#perPage').on('change', function() {
+        loadUsersData();
+    });
+
+    // Handle pagination clicks
+    $(document).on('click', '.pagination-link', function(e) {
+        e.preventDefault();
+        const page = $(this).data('page');
+        loadUsersData(page);
+    });
+    });
+
+    function loadUsersData(page = 1) {
+        const search = $('#searchInput').val();
+        const perPage = $('#perPage').val();
+
+        $.ajax({
+            url: '{{ route("users.index") }}',
+            type: 'GET',
+            data: {
+                search: search,
+                per_page: perPage,
+                page: page,
+                ajax: true
+            },
+            success: function(response) {
+                $('#userTableContainer').html(response.html);
+                $('#paginationLinks').html(response.pagination);
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+</script>

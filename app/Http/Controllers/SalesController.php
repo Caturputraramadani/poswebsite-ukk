@@ -209,15 +209,14 @@ class SalesController extends Controller
             'member_phone' => 'nullable|string'
         ]);
 
-        // Calculate subtotal
         $subTotal = 0;
         $productsData = [];
-        
+
         foreach ($request->products as $product) {
             $productModel = Product::find($product['id']);
             $totalPrice = $productModel->price * $product['quantity'];
             $subTotal += $totalPrice;
-            
+
             $productsData[] = [
                 'product_id' => $product['id'],
                 'quantity_product' => $product['quantity'],
@@ -225,17 +224,15 @@ class SalesController extends Controller
             ];
         }
 
-        // Check if member
         $member = null;
         $isNewMember = false;
-        
+
         if ($request->member_phone) {
             $member = Member::where('no_telephone', $request->member_phone)->first();
-            
-            // If member doesn't exist, create new one
+
             if (!$member) {
                 $member = Member::create([
-                    'name' => '', // Empty name to be filled later
+                    'name' => '',
                     'no_telephone' => $request->member_phone,
                     'point' => 0,
                     'date' => Carbon::now()
@@ -244,49 +241,50 @@ class SalesController extends Controller
             }
         }
 
-        // Calculate change
         $change = $request->amount_paid - $subTotal;
         if ($change < 0) {
             return redirect()->back()->withErrors(['amount_paid' => 'Jumlah pembayaran kurang dari total harga.']);
         }
 
-        // Create sale record
         $sale = Sale::create([
             'date' => Carbon::now(),
             'user_id' => Auth::id(),
             'member_id' => $member ? $member->id : null,
-            'point_used' => 0, // No points used initially
+            'point_used' => 0,
             'change' => $change,
             'amount_paid' => $request->amount_paid,
             'sub_total' => $subTotal,
             'is_new_member' => $isNewMember
         ]);
 
-        // Save product details
         foreach ($productsData as $productData) {
             $sale->saleDetails()->create($productData);
-            
-            // Reduce product stock
+
             $product = Product::find($productData['product_id']);
             $product->stock -= $productData['quantity_product'];
             $product->save();
         }
 
-        // Redirect based on member status
+        // ✅ Tambah point langsung (1% dari total)
+        if ($member) {
+            $earnedPoint = floor($subTotal * 0.01); // langsung dalam Rupiah
+            $member->increment('point', $earnedPoint);
+        }
+
         if ($member) {
             return redirect()->route('sales.memberPayment', ['id' => $sale->id]);
         }
-        
+
         return redirect()->route('sales.detailPrint', ['id' => $sale->id]);
     }
+
 
     public function memberPayment($id)
     {
         $sale = Sale::with(['saleDetails.product', 'member'])->findOrFail($id);
-        
-        // Check if this is member's first purchase
+
         $isFirstPurchase = $sale->member->sales()->count() === 1;
-        
+
         return view('sales.member-payment', [
             'sale' => $sale,
             'is_new_member' => $sale->is_new_member,
@@ -295,48 +293,40 @@ class SalesController extends Controller
         ]);
     }
 
+
     public function updateMemberPayment(Request $request, $id)
     {
         $sale = Sale::with('member')->findOrFail($id);
-        
+
         $request->validate([
             'member_name' => 'required|string|max:255',
-            'use_points' => 'nullable|boolean',
-            'point_used' => 'nullable|integer|min:0|max:'.$sale->member->point
+            'use_points' => 'nullable|boolean'
         ]);
 
-        // Update member name
         $sale->member->update(['name' => $request->member_name]);
 
         $pointUsed = 0;
-        $totalAfterPoint = $sale->sub_total;
-        $change = $sale->amount_paid - $totalAfterPoint;
+        $totalBefore = $sale->sub_total;
 
-        // Process points if used
-        if ($request->use_points && $request->point_used > 0) {
-            $pointUsed = min($request->point_used, $sale->member->point);
-            $pointDeduction = $pointUsed * 100;
-            
-            $totalAfterPoint = max(0, $sale->sub_total - $pointDeduction);
-            $change = $sale->amount_paid - $totalAfterPoint;
-            
+        if ($request->use_points && $sale->member->point > 0) {
+            $pointUsed = min($sale->member->point, $totalBefore);
             $sale->member->decrement('point', $pointUsed);
+            $totalBefore -= $pointUsed;
         }
 
-        // Update sale
+        $change = $sale->amount_paid - $totalBefore;
+
         $sale->update([
             'point_used' => $pointUsed,
-            'sub_total' => $totalAfterPoint,
+            'sub_total' => $totalBefore,
             'change' => $change,
             'is_new_member' => false
         ]);
 
-        // Add earned points
-        $pointsEarned = floor($totalAfterPoint / 10000);
-        $sale->member->increment('point', $pointsEarned);
-
         return redirect()->route('sales.detailPrint', $sale->id);
     }
+
+
 
     public function exportPdf($id)
     {

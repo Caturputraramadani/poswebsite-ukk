@@ -7,11 +7,44 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     $users = User::all();
+    //     return view('pages.user', compact('users'));
+    // }
+
+    
+
+    public function index(Request $request)
     {
-        $users = User::all();
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $query =  User::query();
+
+        if ($search) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('role', 'like', '%'.$search.'%');
+        }
+
+
+        $users = $query->paginate($perPage)->onEachSide(1); 
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('users.partials.table', compact('users'))->render(),
+                'pagination' => view('users.partials.pagination', [
+                    'paginator' => $users,
+                    'elements' => $users->links()->elements, 
+                    'entries_info' => "Showing {$users->firstItem()} to {$users->lastItem()} of {$users->total()} entries"
+                ])->render(),
+            ]);
+        }
+
         return view('pages.user', compact('users'));
     }
+
 
     public function save(Request $request, $id = null)
     {

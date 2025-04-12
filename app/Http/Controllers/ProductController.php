@@ -8,10 +8,41 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    // public function index()
+    // {
+    //     $products = Product::all();
+    //     return view('pages.product', compact('products'));
+    // }
+
+    
+
+    public function index(Request $request)
     {
-        $products = Product::all();
-        return view('pages.product', compact('products'));
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $query = Product::query(); // atau User::query()
+
+        if ($search) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('price', 'like', '%'.$search.'%')
+                ->orWhere('stock', 'like', '%'.$search.'%');
+        }
+
+        $data = $query->paginate($perPage)->onEachSide(1); // Batasi hanya 1 halaman di setiap sisi
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('products.partials.table', ['products' => $data])->render(),
+                'pagination' => view('products.partials.pagination', [
+                    'paginator' => $data,
+                    'elements' => $data->links()->elements,
+                    'entries_info' => "Showing {$data->firstItem()} to {$data->lastItem()} of {$data->total()} entries"
+                ])->render(),
+            ]);
+        }
+
+        return view('pages.product', ['products' => $data]);
     }
 
     public function save(Request $request, $id = null)
