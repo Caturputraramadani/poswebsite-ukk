@@ -732,205 +732,173 @@
 </script>
 
 {{-- Script Paginate Sales index --}}
-<script>
+{{-- <script>
     function changePerPage(select) {
         const perPage = select.value;
         const url = new URL(window.location.href);
         url.searchParams.set('per_page', perPage);
         window.location.href = url.toString();
     }
-</script>
+</script> --}}
 
-{{-- Script Search Paginate Sales --}}
+{{-- Script untuk Sales --}}
 <script>
-    $(document).ready(function() {
+    function initializeSalesPagination() {
         // Search on keyup with delay
-        let searchTimer;
-        $('#searchInput').on('keyup', function() {
-            clearTimeout(searchTimer);
-            searchTimer = setTimeout(function() {
+        let salesSearchTimer;
+        $('#salesSearchInput').on('keyup', function() {
+            clearTimeout(salesSearchTimer);
+            salesSearchTimer = setTimeout(function() {
                 loadSalesData();
             }, 500);
         });
 
         // Change per page
-        $('#perPage').on('change', function() {
+        $('#salesPerPage').on('change', function() {
             loadSalesData();
         });
 
         // Handle pagination clicks
-        $(document).on('click', '.pagination a', function(e) {
+        $(document).on('click', '.sales-pagination-link', function(e) {
             e.preventDefault();
-            let page = $(this).attr('href').split('page=')[1];
+            const page = $(this).data('page');
             loadSalesData(page);
         });
-    });
 
-    function loadSalesData(page = 1) {
-        const search = $('#searchInput').val();
-        const perPage = $('#perPage').val();
+        function loadSalesData(page = 1) {
+            const search = $('#salesSearchInput').val();
+            const perPage = $('#salesPerPage').val();
 
-        $.ajax({
-            url: '{{ route("sales.index") }}',
-            type: 'GET',
-            data: {
-                search: search,
-                per_page: perPage,
-                page: page,
-                ajax: true
-            },
-            success: function(response) {
-                $('#salesTableContainer').html(response.html);
-                $('#paginationLinks').html(response.pagination);
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-            }
-        });
-    }
-
-    $(document).ready(function() {
-    // Search on keyup with delay
-    let searchTimer;
-    $('#searchInput').on('keyup', function() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(function() {
-            loadSalesData();
-        }, 500);
-    });
-
-    // Change per page
-    $('#perPage').on('change', function() {
-        loadSalesData();
-    });
-
-    // Handle pagination clicks
-    $(document).on('click', '.pagination-link', function(e) {
-        e.preventDefault();
-        const page = $(this).data('page');
-        loadSalesData(page);
-    });
-    });
-
-    function loadSalesData(page = 1) {
-    const search = $('#searchInput').val();
-    const perPage = $('#perPage').val();
-
-    $.ajax({
-        url: '{{ route("sales.index") }}',
-        type: 'GET',
-        data: {
-            search: search,
-            per_page: perPage,
-            page: page,
-            ajax: true
-        },
-        success: function(response) {
-            $('#salesTableContainer').html(response.html);
-            $('#paginationLinks').html(response.pagination);
-            $('#entriesInfo').text(response.entries_info); // Update entries info
-        },
-        error: function(xhr) {
-            console.log(xhr.responseText);
+            $.ajax({
+                url: '{{ route("sales.index") }}',
+                type: 'GET',
+                data: {
+                    search: search,
+                    per_page: perPage,
+                    page: page,
+                    ajax: true
+                },
+                success: function(response) {
+                    $('#salesTableContainer').html(response.html);
+                    $('#salesPaginationLinks').html(response.pagination);
+                    if (response.entries_info) {
+                        $('#salesEntriesInfo').text(response.entries_info);
+                    }
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
         }
-    });
     }
+
+    $(document).ready(function() {
+        initializeSalesPagination();
+    });
 </script>
 
-{{-- Script Search Paginate Product --}}
+{{-- Script untuk Product --}}
 <script>
-    $(document).ready(function() {
-    // Search on keyup with delay
-    let searchTimer;
-    $('#searchInput').on('keyup', function() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(function() {
+    function initializeProductPagination() {
+        // Search on keyup with delay
+        let productSearchTimer;
+        $('#productSearchInput').on('keyup', function() {
+            clearTimeout(productSearchTimer);
+            productSearchTimer = setTimeout(function() {
+                loadProductsData();
+            }, 500);
+        });
+
+        // Change per page
+        $('#productPerPage').on('change', function() {
             loadProductsData();
-        }, 500);
-    });
-
-    // Change per page
-    $('#perPage').on('change', function() {
-        loadProductsData();
-    });
-
-    // Handle pagination clicks
-    $(document).on('click', '.pagination-link', function(e) {
-        e.preventDefault();
-        const page = $(this).data('page');
-        loadProductsData(page);
-    });
-    });
-
-    function loadProductsData(page = 1) {
-        const search = $('#searchInput').val();
-        const perPage = $('#perPage').val();
-
-        $.ajax({
-            url: '{{ route("products.index") }}',
-            type: 'GET',
-            data: {
-                search: search,
-                per_page: perPage,
-                page: page,
-                ajax: true
-            },
-            success: function(response) {
-                $('#productTableContainer').html(response.html);
-                $('#paginationLinks').html(response.pagination);
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-            }
         });
+
+        // Handle pagination clicks
+        $(document).on('click', '.product-pagination-link', function(e) {
+            e.preventDefault();
+            const page = $(this).data('page');
+            loadProductsData(page);
+        });
+
+        function loadProductsData(page = 1) {
+            const search = $('#productSearchInput').val();
+            const perPage = $('#productPerPage').val();
+
+            $.ajax({
+                url: '{{ route("products.index") }}',
+                type: 'GET',
+                data: {
+                    search: search,
+                    per_page: perPage,
+                    page: page,
+                    ajax: true
+                },
+                success: function(response) {
+                    $('#productTableContainer').html(response.html);
+                    $('#productPaginationLinks').html(response.pagination);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
     }
+
+    $(document).ready(function() {
+        initializeProductPagination();
+    });
 </script>
 
-{{-- Script Search Paginate User --}}
+{{-- Script untuk User --}}
 <script>
-    $(document).ready(function() {
-    // Search on keyup with delay
-    let searchTimer;
-    $('#searchInput').on('keyup', function() {
-        clearTimeout(searchTimer);
-        searchTimer = setTimeout(function() {
-            loadUsersData();
-        }, 500);
-    });
-
-    // Change per page
-    $('#perPage').on('change', function() {
-        loadUsersData();
-    });
-
-    // Handle pagination clicks
-    $(document).on('click', '.pagination-link', function(e) {
-        e.preventDefault();
-        const page = $(this).data('page');
-        loadUsersData(page);
-    });
-    });
-
-    function loadUsersData(page = 1) {
-        const search = $('#searchInput').val();
-        const perPage = $('#perPage').val();
-
-        $.ajax({
-            url: '{{ route("users.index") }}',
-            type: 'GET',
-            data: {
-                search: search,
-                per_page: perPage,
-                page: page,
-                ajax: true
-            },
-            success: function(response) {
-                $('#userTableContainer').html(response.html);
-                $('#paginationLinks').html(response.pagination);
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-            }
+    function initializeUserPagination() {
+        // Search on keyup with delay
+        let userSearchTimer;
+        $('#userSearchInput').on('keyup', function() {
+            clearTimeout(userSearchTimer);
+            userSearchTimer = setTimeout(function() {
+                loadUsersData();
+            }, 500);
         });
+
+        // Change per page
+        $('#userPerPage').on('change', function() {
+            loadUsersData();
+        });
+
+        // Handle pagination clicks
+        $(document).on('click', '.user-pagination-link', function(e) {
+            e.preventDefault();
+            const page = $(this).data('page');
+            loadUsersData(page);
+        });
+
+        function loadUsersData(page = 1) {
+            const search = $('#userSearchInput').val();
+            const perPage = $('#userPerPage').val();
+
+            $.ajax({
+                url: '{{ route("users.index") }}',
+                type: 'GET',
+                data: {
+                    search: search,
+                    per_page: perPage,
+                    page: page,
+                    ajax: true
+                },
+                success: function(response) {
+                    $('#userTableContainer').html(response.html);
+                    $('#userPaginationLinks').html(response.pagination);
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
     }
+
+    $(document).ready(function() {
+        initializeUserPagination();
+    });
 </script>

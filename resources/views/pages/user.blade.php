@@ -16,12 +16,11 @@
                 </a>
             </div>
 
-
-             <!-- Tambahkan Search dan Pagination Controls -->
-             <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+            <!-- Tambahkan Search dan Pagination Controls -->
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Search..." 
+                        <input type="text" id="userSearchInput" placeholder="Search..." 
                             class="pl-10 pr-4 py-2 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         <div class="absolute left-3 top-2.5">
                             <i class="fas fa-search text-gray-400"></i>
@@ -32,7 +31,7 @@
                 <div class="flex items-center text-sm gap-2">
                     <span class="text-gray-600">Show:</span>
                     <div class="relative">
-                        <select id="perPage" 
+                        <select id="userPerPage" 
                             class="appearance-none border border-gray-300 rounded-md px-3 pr-8 py-1.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -44,14 +43,12 @@
                 </div>
             </div>
 
-
-
             <!-- Container untuk tabel dan pagination -->
             <div class="relative overflow-x-auto" id="userTableContainer">
                 @include('users.partials.table', ['users' => $users])
             </div>
 
-            <div class="mt-4" id="paginationLinks">
+            <div class="mt-4" id="userPaginationLinks">
                 @if(isset($users))
                     @include('users.partials.pagination', [
                         'paginator' => $users,
@@ -61,6 +58,8 @@
             </div>
         </div>
     </div>
+
+
 
     <!-- Modal Add/Edit Data -->
     <div id="dataModal" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 hidden z-[999]">

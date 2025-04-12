@@ -29,13 +29,13 @@ class SalesController extends Controller
 
         if ($search) {
             $query->whereHas('member', function($q) use ($search) {
-                        $q->where('name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhereHas('user', function($q) use ($search) {
-                        $q->where('name', 'like', '%'.$search.'%');
-                    })
-                    ->orWhere('date', 'like', '%'.$search.'%')
-                    ->orWhere('sub_total', 'like', '%'.$search.'%');
+                $q->where('name', 'like', '%'.$search.'%');
+            })
+            ->orWhereHas('user', function($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%');
+            })
+            ->orWhere('date', 'like', '%'.$search.'%')
+            ->orWhere('sub_total', 'like', '%'.$search.'%');
         }
 
         $sales = $query->paginate($perPage)->onEachSide(1);
@@ -45,12 +45,12 @@ class SalesController extends Controller
                 'html' => view('sales.partials.table', compact('sales'))->render(),
                 'pagination' => view('sales.partials.pagination', [
                     'paginator' => $sales,
-                    'elements' => $sales->links()->elements, // Add this line
-                    'entries_info' => $this->getEntriesInfo($sales)
+                    'elements' => $sales->links()->elements,
+                    'entries_info' => "Showing {$sales->firstItem()} to {$sales->lastItem()} of {$sales->total()} entries"
                 ])->render(),
             ]);
         }
-    
+
         return view('sales.index', compact('sales'));
     }
 

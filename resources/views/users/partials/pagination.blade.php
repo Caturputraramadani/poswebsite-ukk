@@ -21,7 +21,7 @@
                     <li>
                         <a href="#" 
                            data-page="{{ $paginator->currentPage() - 1 }}"
-                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">Previous</a>
+                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 user-pagination-link">Previous</a>
                     </li>
                 @endif
 
@@ -46,7 +46,7 @@
                                     <li>
                                         <a href="#" 
                                            data-page="{{ $page }}"
-                                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">{{ $page }}</a>
+                                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 user-pagination-link">{{ $page }}</a>
                                     </li>
                                 @endif
                             @endforeach
@@ -59,7 +59,7 @@
                     <li>
                         <a href="#" 
                            data-page="{{ $paginator->currentPage() + 1 }}"
-                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">Next</a>
+                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 user-pagination-link">Next</a>
                     </li>
                 @else
                     <li aria-disabled="true">

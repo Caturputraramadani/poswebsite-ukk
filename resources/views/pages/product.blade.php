@@ -22,7 +22,7 @@
              <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <input type="text" id="searchInput" placeholder="Search..." 
+                        <input type="text" id="productSearchInput" placeholder="Search..." 
                             class="pl-10 pr-4 py-2 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         <div class="absolute left-3 top-2.5">
                             <i class="fas fa-search text-gray-400"></i>
@@ -33,7 +33,7 @@
                 <div class="flex items-center text-sm gap-2">
                     <span class="text-gray-600">Show:</span>
                     <div class="relative">
-                        <select id="perPage" 
+                        <select id="productPerPage" 
                             class="appearance-none border border-gray-300 rounded-md px-3 pr-8 py-1.5 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                             <option value="10">10</option>
                             <option value="25">25</option>
@@ -45,14 +45,12 @@
                 </div>
             </div>
 
-            
-
-             <!-- Container untuk tabel dan pagination -->
-            <div class="relative overflow-x-auto" id="productTableContainer">
+            <!-- Container untuk tabel dan pagination -->
+            <div class="relative overflow-x-auto product-container" id="productTableContainer">
                 @include('products.partials.table', ['products' => $products])
             </div>
 
-            <div class="mt-4" id="paginationLinks">
+            <div class="mt-4" id="productPaginationLinks">
                 @if(isset($products))
                     @include('products.partials.pagination', [
                         'paginator' => $products,

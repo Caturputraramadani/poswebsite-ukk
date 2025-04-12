@@ -14,7 +14,7 @@
                 @else
                     <li>
                         <a href="#" data-page="{{ $paginator->currentPage() - 1 }}" 
-                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">Previous</a>
+                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 product-pagination-link">Previous</a>
                     </li>
                 @endif
 
@@ -29,7 +29,7 @@
                 {{-- First Page Link --}}
                 @if ($start > 1)
                     <li>
-                        <a href="#" data-page="1" class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">1</a>
+                        <a href="#" data-page="1" class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 product-pagination-link">1</a>
                     </li>
                     @if ($start > 2)
                         <li aria-disabled="true">
@@ -47,7 +47,7 @@
                     @else
                         <li>
                             <a href="#" data-page="{{ $page }}" 
-                               class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">{{ $page }}</a>
+                               class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 product-pagination-link">{{ $page }}</a>
                         </li>
                     @endif
                 @endfor
@@ -61,7 +61,7 @@
                     @endif
                     <li>
                         <a href="#" data-page="{{ $paginator->lastPage() }}" 
-                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">{{ $paginator->lastPage() }}</a>
+                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 product-pagination-link">{{ $paginator->lastPage() }}</a>
                     </li>
                 @endif
 
@@ -69,7 +69,7 @@
                 @if ($paginator->hasMorePages())
                     <li>
                         <a href="#" data-page="{{ $paginator->currentPage() + 1 }}" 
-                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 pagination-link">Next</a>
+                           class="px-3 py-1 rounded-md text-gray-700 hover:bg-gray-100 product-pagination-link">Next</a>
                     </li>
                 @else
                     <li aria-disabled="true">
